@@ -13,23 +13,33 @@ headers = {
     'accept': 'application/json',
 }
 
-# Make the GET request
-response = requests.get(url, headers=headers)
+def fetch_customer_ids():
+    """
+    Fetches the customer IDs from the external API and returns them as a list.
+    """
+    # Make the GET request
+    response = requests.get(url, headers=headers)
 
-fetched_data = response.json()
+    if response.status_code != 200:
+        print(f"Failed to fetch data: {response.status_code}")
+        return []
 
-fetched_data_items = fetched_data['data']['items']
-customers_list = []
+    fetched_data = response.json()
+
+    if 'data' not in fetched_data or 'items' not in fetched_data['data']:
+        print("Invalid data structure received from the API.")
+        return []
+
+    fetched_data_items = fetched_data['data']['items']
+    customers_list = []
+
+    # Add customer_ident to the list
+    for item in fetched_data_items:
+        customers_list.append(item['customer_ident'])
+        print(item['customer_ident'])
+
+    return customers_list
 
 
-for item in fetched_data_items:
-    customers_list.append(item['customer_ident'])
-
-    print(item['customer_ident'])
-
-customer_ident = fetched_data['data']['items'][0]['customer_ident']
-print(customers_list)
-
-
-print(response.text)
-
+if __name__ == '__main__':
+    fetch_customer_ids()
