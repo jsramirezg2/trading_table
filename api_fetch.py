@@ -7,7 +7,7 @@ load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
 # Define the API endpoint and headers
-url = 'https://mapi.boomfi.xyz/v1/customers'
+url = 'https://mapi.boomfi.xyz/v1/subscriptions?status=Active' # change customers to subscriptions after testing the api
 headers = {
     'X-API-KEY': API_KEY,
     'accept': 'application/json',
@@ -35,8 +35,8 @@ def fetch_customer_ids():
 
     # Add customer_ident to the list
     for item in fetched_data_items:
-        customers_list.append(item['customer_ident'])
-        print(item['customer_ident'])
+        customers_list.append(item["customer"]["reference"])
+        print(item["customer"]["reference"])
 
     return customers_list
 

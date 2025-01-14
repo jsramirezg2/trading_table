@@ -17,7 +17,7 @@ intents.members = True  # Enable member intent to read the member list
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # Role name (or ID) to be assigned/removed
-role_name = "VIP member"  # Replace with the actual role name
+role_name = "VIP member"
 
 # Global variable for the customer list
 customers_list = []
