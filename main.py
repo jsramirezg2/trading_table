@@ -76,5 +76,24 @@ async def periodically_check_customer_list():
     while True:
         await update_roles_based_on_customers()
 
+
+@bot.slash_command(name="join", description="Get your custom link")
+async def join(ctx: discord.ApplicationContext):
+    # Generate a custom link using the user's Discord ID
+    user_id = ctx.author.id
+    custom_link = f"https://pay.boomfi.xyz/2rZx2bKem7f9f0e2JaNT6e7PGaz?customer_ident={user_id}"
+    # Create a button with the custom link
+    button = discord.ui.Button(label="Click Here", url=custom_link)
+    view = discord.ui.View()
+    view.add_item(button)
+    # Respond with the button
+    await ctx.respond(
+        f"Here is your custom link:",
+        view=view,
+        ephemeral=True  # Makes the message visible only to the user
+    )
+
+
+
 # Run the bot with your token
 bot.run(TOKEN)
