@@ -29,15 +29,18 @@ async def update_roles_based_on_customers():
     # Fetch the latest customer list
     new_customers_list = fetch_customer_ids()
 
+    # Check if the customers have their roles updated
+    await manage_roles()
+
     if new_customers_list != customers_list:
         print("Customer list has changed!")
         customers_list = new_customers_list
-        await manage_roles()  # Manage roles based on the updated list
+
     else:
         print("No changes to the customer list.")
 
     # Wait for a specified period before checking again (e.g., 60 seconds)
-    await asyncio.sleep(60)
+    await asyncio.sleep(30)
 
 async def manage_roles():
     for guild in bot.guilds:
