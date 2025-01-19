@@ -1,10 +1,10 @@
 import os
-import time
 import asyncio
+import logging
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands, tasks
-from api_fetch import fetch_customer_ids  # Import the function from fetch_api.py
+from api_fetch import fetch_customer_ids
 
 load_dotenv()
 
@@ -22,22 +22,24 @@ role_name = "VIP member"
 # Global variable for the customer list
 customers_list = []
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
 # Function to check for updates to the customer list and update the role
 async def update_roles_based_on_customers():
     global customers_list
 
     # Fetch the latest customer list
-    new_customers_list = fetch_customer_ids()
+    new_customers_list = await fetch_customer_ids()
 
     # Check if the customers have their roles updated
     await manage_roles()
 
     if new_customers_list != customers_list:
-        print("Customer list has changed!")
+        logging.info("Customer list has changed!")
         customers_list = new_customers_list
-
     else:
-        print("No changes to the customer list.")
+        logging.info("No changes to the customer list.")
 
     # Wait for a specified period before checking again (e.g., 60 seconds)
     await asyncio.sleep(30)
@@ -48,7 +50,7 @@ async def manage_roles():
         role = discord.utils.get(guild.roles, name=role_name)
 
         if not role:
-            print(f"Role '{role_name}' not found!")
+            logging.warning(f"Role '{role_name}' not found!")
             continue
 
         # Fetch all members with the role
@@ -58,18 +60,18 @@ async def manage_roles():
         for member in members_with_role:
             if str(member.id) not in customers_list:
                 await member.remove_roles(role)
-                print(f"Removed role from {member.name} ({member.id})")
+                logging.info(f"Removed role from {member.name} ({member.id})")
 
         # Add the role to members who are in the customer list, but don't have it
         for user_id in customers_list:
             member = guild.get_member(int(user_id))
             if member and role not in member.roles:
                 await member.add_roles(role)
-                print(f"Assigned role to {member.name} ({member.id})")
+                logging.info(f"Assigned role to {member.name} ({member.id})")
 
 @bot.event
 async def on_ready():
-    print(f"Bot is logged in as {bot.user}")
+    logging.info(f"Bot is logged in as {bot.user}")
 
     # Start the background task to check for updates every 60 seconds
     bot.loop.create_task(periodically_check_customer_list())
@@ -78,7 +80,6 @@ async def on_ready():
 async def periodically_check_customer_list():
     while True:
         await update_roles_based_on_customers()
-
 
 @bot.slash_command(name="join", description="Get your custom link")
 async def join(ctx: discord.ApplicationContext):
@@ -95,8 +96,6 @@ async def join(ctx: discord.ApplicationContext):
         view=view,
         ephemeral=True  # Makes the message visible only to the user
     )
-
-
 
 # Run the bot with your token
 bot.run(TOKEN)
