@@ -31,7 +31,7 @@ async def fetch_customer_ids():
                 return []
 
             fetched_data_items = fetched_data['data']['items']
-            customers_list = [item["customer"]["reference"] for item in fetched_data_items]
+            customers_list = [item["customer"]["reference"] for item in fetched_data_items if item["is_overdue"] != True]
 
             for customer_id in customers_list:
                 logging.info(customer_id)
