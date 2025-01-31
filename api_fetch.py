@@ -2,10 +2,13 @@ import aiohttp
 import os
 from dotenv import load_dotenv
 import logging
+import json
 
 load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
+
+logging.basicConfig(level=logging.INFO)
 
 # Define the API endpoint and headers
 url = 'https://mapi.boomfi.xyz/v1/subscriptions?status=Active'
@@ -13,6 +16,12 @@ headers = {
     'X-API-KEY': API_KEY,
     'accept': 'application/json',
 }
+
+# save list of exempted users
+with open('app_settings.json', 'r') as f:
+    exempted_users = json.load(f)["exemptions"]["users"]
+    
+
 
 async def fetch_customer_ids():
     """
@@ -32,6 +41,8 @@ async def fetch_customer_ids():
 
             fetched_data_items = fetched_data['data']['items']
             customers_list = [item["customer"]["reference"] for item in fetched_data_items if item["is_overdue"] != True]
+            for i in exempted_users:
+                customers_list.append(i)
 
             for customer_id in customers_list:
                 logging.info(customer_id)
