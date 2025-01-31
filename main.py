@@ -9,6 +9,8 @@ from api_fetch import fetch_customer_ids
 load_dotenv()
 
 TOKEN = os.getenv('TOKEN')
+BOOMFI_SUB_LINK = os.getenv('BOOMFI_SUB_LINK')
+BOOMFI_LIFETIME_LINK = os.getenv('BOOMFI_LIFETIME_LINK')
 
 # Bot setup
 intents = discord.Intents.default()
@@ -85,11 +87,14 @@ async def periodically_check_customer_list():
 async def join(ctx: discord.ApplicationContext):
     # Generate a custom link using the user's Discord ID
     user_id = ctx.author.id
-    custom_link = f"https://pay.boomfi.xyz/2rZx2bKem7f9f0e2JaNT6e7PGaz?customer_ident={user_id}"
+    custom_link = f"{BOOMFI_SUB_LINK}?customer_ident={user_id}"
+    custom_link_lifetime = f"{BOOMFI_LIFETIME_LINK}?customer_ident={user_id}"
     # Create a button with the custom link
-    button = discord.ui.Button(label="Click Here", url=custom_link)
+    button = discord.ui.Button(label="Click Here -> Monthly subscription", url=custom_link)
+    button_lifetime = discord.ui.Button(label="Click Here -> Lifetime payment", url=custom_link_lifetime)
     view = discord.ui.View()
     view.add_item(button)
+    view.add_item(button_lifetime)
     # Respond with the button
     await ctx.respond(
         f"Here is your custom link:",
