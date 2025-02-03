@@ -11,7 +11,8 @@ RUN pip install pipenv
 COPY Pipfile Pipfile.lock ./
 
 # Install dependencies using Pipenv
-RUN pipenv install --system --deploy
+RUN pipenv install --dev --deploy
+RUN pipenv install python-dotenv
 
 # Copy the rest of the application code
 COPY . .
